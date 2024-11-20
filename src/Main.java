@@ -14,3 +14,5 @@ public class Main {
         });
     }
 }
+//在终端使用git push -u origin master上传
+//在终端使用git pull更新项目文件
