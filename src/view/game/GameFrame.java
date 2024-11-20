@@ -8,11 +8,15 @@ import controller.GameController;
 import model.MapMatrix;
 import view.FrameUtil;
 
+
+
 public class GameFrame extends JFrame {
+
 
     private GameController controller;
     private JButton restartBtn;
     private JButton loadBtn;
+
     private JButton upBtn;
     private JButton downBtn;
     private JButton rightBtn;
@@ -20,6 +24,7 @@ public class GameFrame extends JFrame {
 
     private JLabel stepLabel;
     private GamePanel gamePanel;
+
 
     public GameFrame(int width, int height, MapMatrix mapMatrix) {
         this.setTitle("2024 CS109 Project Demo");
@@ -29,6 +34,7 @@ public class GameFrame extends JFrame {
         gamePanel.setLocation(30, height / 2 - gamePanel.getHeight() / 2);
         this.add(gamePanel);
         this.controller = new GameController(gamePanel, mapMatrix);
+        gamePanel.setController(controller);
 
         ImageIcon down = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move down.png")));
         ImageIcon up = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move up.png")));
@@ -47,11 +53,13 @@ public class GameFrame extends JFrame {
         this.upBtn.setIcon(up);
         this.downBtn.setIcon(down);
         this.leftBtn.setIcon(left);
-        this.rightBtn.setIcon(right);//给按钮渲染图片
+        this.rightBtn.setIcon(right);
+        //给按钮渲染图片
         this.upBtn.setPreferredSize(new Dimension(up.getIconWidth(), up.getIconHeight()));
         this.downBtn.setPreferredSize(new Dimension(down.getIconWidth(), down.getIconHeight()));
         this.leftBtn.setPreferredSize(new Dimension(left.getIconWidth(), left.getIconHeight()));
         this.rightBtn.setPreferredSize(new Dimension(right.getIconWidth(), right.getIconHeight()));
+        //使得按钮与图片契合
 
         this.restartBtn.addActionListener(e -> {
             controller.restartGame();
@@ -62,10 +70,27 @@ public class GameFrame extends JFrame {
             System.out.println(string);
             gamePanel.requestFocusInWindow();//enable key listener
         });
-
+        this.upBtn.addActionListener(l -> {
+            gamePanel.doMoveUp();
+            gamePanel.requestFocusInWindow();//使键盘夺回焦点，避免键盘移动失灵
+        });
+        this.downBtn.addActionListener(l -> {
+            gamePanel.doMoveDown();
+            gamePanel.requestFocusInWindow();
+        });
+        this.leftBtn.addActionListener(l -> {
+            gamePanel.doMoveLeft();
+            gamePanel.requestFocusInWindow();
+        });
+        this.rightBtn.addActionListener(l -> {
+            gamePanel.doMoveRight();
+            gamePanel.requestFocusInWindow();
+        });
         //todo: add other button here
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
     }
+
 
 }
