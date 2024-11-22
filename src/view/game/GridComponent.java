@@ -80,6 +80,7 @@ public class GridComponent extends JComponent {
         this.box = box;
         this.add(box);
     }
+
     //When removing hero from this grid, invoking this method
     public Hero removeHeroFromGrid() {
         this.remove(this.hero);//remove hero component from grid component
@@ -89,6 +90,7 @@ public class GridComponent extends JComponent {
         this.repaint();
         return h;
     }
+
     //When removing box from this grid, invoking this method
     public Box removeBoxFromGrid() {
         this.remove(this.box);//remove box component from grid component

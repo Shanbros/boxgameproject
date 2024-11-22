@@ -60,7 +60,7 @@ public class GamePanel extends ListenerPanel {
 
     @Override
     public void doMoveRight() {
-        System.out.println("Click VK_RIGHT");
+        System.out.println("Click RIGHT");
         if (controller.doMove(hero.getRow(), hero.getCol(), Direction.RIGHT)) {
             this.afterMove();
         }
@@ -68,7 +68,7 @@ public class GamePanel extends ListenerPanel {
 
     @Override
     public void doMoveLeft() {
-        System.out.println("Click VK_LEFT");
+        System.out.println("Click LEFT");
         if(controller.doMove(hero.getRow(), hero.getCol(), Direction.LEFT)){
             this.afterMove();
         }
@@ -76,7 +76,7 @@ public class GamePanel extends ListenerPanel {
 
     @Override
     public void doMoveUp() {
-        System.out.println("Click VK_Up");
+        System.out.println("Click UP");
        if( controller.doMove(hero.getRow(), hero.getCol(), Direction.UP)){
            this.afterMove();
        }
@@ -84,7 +84,7 @@ public class GamePanel extends ListenerPanel {
 
     @Override
     public void doMoveDown() {
-        System.out.println("Click VK_DOWN");
+        System.out.println("Click DOWN");
         if(controller.doMove(hero.getRow(), hero.getCol(), Direction.DOWN)){
             this.afterMove();
         }

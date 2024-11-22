@@ -39,7 +39,8 @@ public class GameFrame extends JFrame {
         ImageIcon down = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move down.png")));
         ImageIcon up = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move up.png")));
         ImageIcon left = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move left.png")));
-        ImageIcon right = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move right.png")));//导入按键图片
+        ImageIcon right = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move right.png")));
+        //导入按键图片
 
         this.restartBtn = FrameUtil.createButton(this, "Restart", new Point(gamePanel.getWidth() + 110, 120), 80, 50);
         this.loadBtn = FrameUtil.createButton(this, "Load", new Point(gamePanel.getWidth() + 110, 180), 80, 50);
