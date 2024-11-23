@@ -14,6 +14,8 @@ import view.game.Box;
 public class GameController {
     private final GamePanel view;
     private final MapMatrix model;
+    private static int count = 0;//连续推箱计数器，用于判定失败与否
+    private static int gameResult = 1;//0代表失败，1代表游戏尚未结束，2代表游戏胜利
 
     public GameController(GamePanel view, MapMatrix model) {
         this.view = view;
@@ -51,6 +53,9 @@ public class GameController {
             model.getMatrix()[tRow][tCol] += 20;
             boxMove(tRow, tCol, direction);
             //Update hero in GamePanel
+            int finalBoxRow = tRow + count * direction.getRow();
+            int finalBoxCol = tCol + count * direction.getCol();
+            //代表玩家连续推动的多个箱子中的最末尾的箱子被推到的位置
             Hero h = currentGrid.removeHeroFromGrid();
             targetGrid.setHeroInGrid(h);
             //Update the row and column attribute in hero
@@ -60,6 +65,13 @@ public class GameController {
                 checkWin();
             }
             //检测玩家移动的第一个箱子是否位于目标点，如果是则进行胜利判定
+            if ((map[finalBoxRow + direction.getRow()][finalBoxCol + direction.getCol()] == 1) && gameResult == 1) {
+                checkLose(finalBoxRow, finalBoxCol);
+            }
+            //如果玩家连续推动的多个箱子中的最末尾的箱子被推到的位置与墙接触，并且游戏未结束，则进行失败判定
+            //尽量不要有位于墙的死角的目标点，否则失败判定会异常
+            count = 0;//重置计数器
+            checkResult();
             return true;
         } else {
             return false;
@@ -76,6 +88,7 @@ public class GameController {
         }
         //多个箱子堆叠时会发生连续推动
         if (canBoxMove(row, col, direction)) {
+            count++;//检测被推箱子数量
             model.getMatrix()[row][col] -= 10;
             model.getMatrix()[tRow][tCol] += 10;//更新箱子地图位置
             GridComponent targetGrid = view.getGridComponent(tRow, tCol);
@@ -107,14 +120,90 @@ public class GameController {
             //遍历地图，如果没有未处于目标点的箱子则判定为胜利
         }
         if (whetherWin) {
-            System.out.println("You win!");//此行代码仅用于测试，编写完胜利界面可删除
-            //此处用于编写胜利结算画面
+            gameResult = 2;
         }
     }
 
-    public void checkLose() {
-
+    public void checkLose(int finalBoxRow, int finalBoxCol) {
+        int[][] map = model.getMatrix();
+        int wall = 0;
+        //代表与末尾箱接触的墙面数量
+        if (map[finalBoxRow + Direction.DOWN.getRow()][finalBoxCol + Direction.DOWN.getRow()] == 1) {
+            wall++;
+        }
+        if (map[finalBoxRow + Direction.UP.getRow()][finalBoxCol + Direction.UP.getRow()] == 1) {
+            wall++;
+        }
+        if (map[finalBoxRow + Direction.LEFT.getRow()][finalBoxCol + Direction.LEFT.getRow()] == 1) {
+            wall++;
+        }
+        if (map[finalBoxRow + Direction.RIGHT.getRow()][finalBoxCol + Direction.RIGHT.getRow()] == 1) {
+            wall++;
+        }
+        if (wall >= 2) {
+            gameResult = 0;
+        }
+        //墙面接触面大于等于2，说明已被逼入死角，游戏结束
+        boolean judge = false;
+        //判定是否有靠近墙的目标点
+        if (wall == 1 && map[finalBoxRow][finalBoxCol] != 12) {
+            for (int i = 0; i < map.length; i++) {
+                for (int j = 0; j < map[i].length; j++) {
+                    if (map[i][j] == 1) {
+                        if (checkValid(map, i + 1, j + 1) ) {
+                            if(map[i + 1][j + 1] == (2 | 22)){judge = true;}
+                        } else if (checkValid(map, i + 1, j - 1)) {
+                            if(map[i + 1][j - 1] == (2 | 22)){judge = true;}
+                        } else if (checkValid(map, i - 1, j + 1)) {
+                            if(map[i - 1][j + 1] == (2 | 22)){judge = true;}
+                        } else if (checkValid(map, i - 1, j - 1)) {
+                            if(map[i - 1][j - 1] == (2 | 22)){judge = true;}
+                        } else if (checkValid(map, i + 1, j)) {
+                            if(map[i + 1][j] == (2 | 22)){judge = true;}
+                        } else if (checkValid(map, i, j + 1)) {
+                            if(map[i][j + 1] == (2 | 22)){judge = true;}
+                        } else if (checkValid(map, i, j - 1)) {
+                            if(map[i][j - 1] == (2 | 22)){judge = true;}
+                        } else if (checkValid(map, i - 1, j)) {
+                            if(map[i - 1][j] == (2 | 22)){judge = true;}
+                        }
+                    }
+                }
+            }
+            //遍历地图，在所有的墙周围检测是否有位于3x3范围内的目标点（不包括已被占领的目标点），如果是则游戏失败判定无效
+            if (!judge) {
+                gameResult = 0;
+            }
+        }
+        //如果墙面接触面等于1并且被推动的末尾箱没有被推到目标点上，没有在墙的3x3范围内的目标点，则游戏同样结束
     }
+
+    public void checkResult() {
+        if (gameResult == 0) {
+            System.out.println("You lose!");//此行代码仅用于测试，编写完失败界面可删除
+            //此处用于编写失败画面
+
+
+        } else if (gameResult == 2) {
+            System.out.println("You win!");//此行代码仅用于测试，编写完胜利界面可删除
+            //此处用于编写胜利结算画面
+
+
+        }
+        gameResult = 1;//重置gameResult，进行初始化
+    }
+
+    public boolean checkValid(int[][] map, int i, int j) {
+        int rows = map.length;
+        if (i < 0 || i >= rows) {
+            return false;
+        } else {
+            int cols = map[i].length;
+            return j >= 0 && j < cols;
+        }
+    }
+    //此方法用于去除九宫格检查中跃出地图边界（数组越界）的检查
+
 
     //todo: add other methods such as loadGame, saveGame...
 
