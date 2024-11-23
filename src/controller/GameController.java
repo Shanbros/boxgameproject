@@ -128,16 +128,16 @@ public class GameController {
         int[][] map = model.getMatrix();
         int wall = 0;
         //代表与末尾箱接触的墙面数量
-        if (map[finalBoxRow + Direction.DOWN.getRow()][finalBoxCol + Direction.DOWN.getRow()] == 1) {
+        if (map[finalBoxRow + Direction.DOWN.getRow()][finalBoxCol + Direction.DOWN.getCol()] == 1) {
             wall++;
         }
-        if (map[finalBoxRow + Direction.UP.getRow()][finalBoxCol + Direction.UP.getRow()] == 1) {
+        if (map[finalBoxRow + Direction.UP.getRow()][finalBoxCol + Direction.UP.getCol()] == 1) {
             wall++;
         }
-        if (map[finalBoxRow + Direction.LEFT.getRow()][finalBoxCol + Direction.LEFT.getRow()] == 1) {
+        if (map[finalBoxRow + Direction.LEFT.getRow()][finalBoxCol + Direction.LEFT.getCol()] == 1) {
             wall++;
         }
-        if (map[finalBoxRow + Direction.RIGHT.getRow()][finalBoxCol + Direction.RIGHT.getRow()] == 1) {
+        if (map[finalBoxRow + Direction.RIGHT.getRow()][finalBoxCol + Direction.RIGHT.getCol()] == 1) {
             wall++;
         }
         if (wall >= 2) {
@@ -150,22 +150,22 @@ public class GameController {
             for (int i = 0; i < map.length; i++) {
                 for (int j = 0; j < map[i].length; j++) {
                     if (map[i][j] == 1) {
-                        if (checkValid(map, i + 1, j + 1) ) {
-                            if(map[i + 1][j + 1] == (2 | 22)){judge = true;}
+                        if (checkValid(map, i + 1, j + 1)) {
+                            judge = true;
                         } else if (checkValid(map, i + 1, j - 1)) {
-                            if(map[i + 1][j - 1] == (2 | 22)){judge = true;}
+                            judge = true;
                         } else if (checkValid(map, i - 1, j + 1)) {
-                            if(map[i - 1][j + 1] == (2 | 22)){judge = true;}
+                            judge = true;
                         } else if (checkValid(map, i - 1, j - 1)) {
-                            if(map[i - 1][j - 1] == (2 | 22)){judge = true;}
+                            judge = true;
                         } else if (checkValid(map, i + 1, j)) {
-                            if(map[i + 1][j] == (2 | 22)){judge = true;}
+                            judge = true;
                         } else if (checkValid(map, i, j + 1)) {
-                            if(map[i][j + 1] == (2 | 22)){judge = true;}
+                            judge = true;
                         } else if (checkValid(map, i, j - 1)) {
-                            if(map[i][j - 1] == (2 | 22)){judge = true;}
+                            judge = true;
                         } else if (checkValid(map, i - 1, j)) {
-                            if(map[i - 1][j] == (2 | 22)){judge = true;}
+                            judge = true;
                         }
                     }
                 }
@@ -199,10 +199,14 @@ public class GameController {
             return false;
         } else {
             int cols = map[i].length;
-            return j >= 0 && j < cols;
+            if (j < 0 || j >= cols) {
+                return false;
+            }
+            // 在这里判断坐标合法的情况下，目标点的值是否符合要求
+            return map[i][j] == 2 || map[i][j] == 22;
         }
     }
-    //此方法用于去除九宫格检查中跃出地图边界（数组越界）的检查
+    //此方法用于去除九宫格检查中跃出地图边界（数组越界）的检查，同时判断墙的九宫格内是否有目标点
 
 
     //todo: add other methods such as loadGame, saveGame...
