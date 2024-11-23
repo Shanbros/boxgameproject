@@ -14,8 +14,9 @@ import view.game.Box;
 public class GameController {
     private final GamePanel view;
     private final MapMatrix model;
-    private static int count = 0;//连续推箱计数器，用于判定失败与否
-    private static int gameResult = 1;//0代表失败，1代表游戏尚未结束，2代表游戏胜利
+    private static int count = 0;//连续推箱计数器，用于在超级模式中判定失败与否
+    private static int gameResult = 1;//0 代表失败，1 代表游戏尚未结束，2 代表游戏胜利
+    //超级模式（暂定）：玩家解锁连环推箱子功能，并且可以进行斜向推箱子与移动，地图上会有特殊方格
 
     public GameController(GamePanel view, MapMatrix model) {
         this.view = view;
@@ -47,15 +48,15 @@ public class GameController {
             h.setRow(tRow);
             h.setCol(tCol);
             return true;
-        } else if ((map[tRow][tCol] == 10 || map[tRow][tCol] == 12) && canBoxMove(tRow, tCol, direction)) {
+        } else if ((map[tRow][tCol] == 10 || map[tRow][tCol] == 12) && normalCanBoxMove(tRow, tCol, direction)) {
             //update hero in MapMatrix
             model.getMatrix()[row][col] -= 20;
             model.getMatrix()[tRow][tCol] += 20;
-            boxMove(tRow, tCol, direction);
+            normalBoxMove(tRow, tCol, direction);
             //Update hero in GamePanel
             int finalBoxRow = tRow + count * direction.getRow();
             int finalBoxCol = tCol + count * direction.getCol();
-            //代表玩家连续推动的多个箱子中的最末尾的箱子被推到的位置
+            //代表玩家连续推动的多个箱子中的最末尾的箱子被推到的位置，但在禁用连环推箱的情况下，它代表的是玩家推动的箱子将到达的位置
             Hero h = currentGrid.removeHeroFromGrid();
             targetGrid.setHeroInGrid(h);
             //Update the row and column attribute in hero
@@ -97,6 +98,20 @@ public class GameController {
         }
     }
 
+    public void normalBoxMove(int row, int col, Direction direction) {
+        GridComponent currentGrid = view.getGridComponent(row, col);
+        int tRow = row + direction.getRow();
+        int tCol = col + direction.getCol();
+        if (normalCanBoxMove(row, col, direction)) {
+            count++;
+            model.getMatrix()[row][col] -= 10;
+            model.getMatrix()[tRow][tCol] += 10;//更新箱子地图位置
+            GridComponent targetGrid = view.getGridComponent(tRow, tCol);
+            Box b = currentGrid.removeBoxFromGrid();
+            targetGrid.setBoxInGrid(b);//更新箱子模型位置
+        }
+    }
+
     public boolean canBoxMove(int row, int col, Direction direction) {
         //判定箱子是否能被推动
         int[][] map = model.getMatrix();
@@ -105,6 +120,14 @@ public class GameController {
         if (map[tRow][tCol] == 10 || map[tRow][tCol] == 12) {
             return canBoxMove(tRow, tCol, direction);//检测连续推箱的下一个箱子是否能被推
         } else return map[tRow][tCol] != 1;//检测推箱子是否会撞墙
+    }
+
+    public boolean normalCanBoxMove(int row, int col, Direction direction) {
+        //判定箱子是否能被推动（禁止连环推箱）
+        int[][] map = model.getMatrix();
+        int tRow = row + direction.getRow();
+        int tCol = col + direction.getCol();
+        return map[tRow][tCol] != 1 && map[tRow][tCol] !=10 && map[tRow][tCol] !=12;//检测推箱子是否会撞墙
     }
 
     public void checkWin() {
