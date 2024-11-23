@@ -14,5 +14,5 @@ public class Main {
         });
     }
 }
-//在终端使用git push -u origin master上传
-//在终端使用git pull更新项目文件
+//在终端使用git push -u origin master上传自己已经在本地Git仓库提交的更新文件
+//在终端使用git pull origin master拉取已被更新的项目文件
