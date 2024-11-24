@@ -2,6 +2,8 @@ package view.game;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Objects;
 
 import controller.GameController;
@@ -20,8 +22,10 @@ public class GameFrame extends JFrame {
     private JButton upBtn;
     private JButton downBtn;
     private JButton rightBtn;
-    private JButton leftBtn;//四个操控按钮创建:上下左右的移动
-
+    private JButton leftBtn;
+    //四个操控按钮创建:上下左右的移动
+    private JButton undoBtn;
+    //撤销当前步（悔步）按钮
     private JLabel stepLabel;
     private GamePanel gamePanel;
 
@@ -36,10 +40,12 @@ public class GameFrame extends JFrame {
         this.controller = new GameController(gamePanel, mapMatrix);
         gamePanel.setController(controller);
 
+
         ImageIcon down = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move down.png")));
         ImageIcon up = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move up.png")));
         ImageIcon left = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move left.png")));
         ImageIcon right = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move right.png")));
+        ImageIcon undo = new ImageIcon(Objects.requireNonNull(GameFrame.class.getResource("move undo.png")));
         //导入按键图片
 
         this.restartBtn = FrameUtil.createButton(this, "Restart", new Point(gamePanel.getWidth() + 110, 120), 80, 50);
@@ -49,17 +55,20 @@ public class GameFrame extends JFrame {
         this.downBtn = FrameUtil.createButton(this, "", new Point(gamePanel.getWidth() + 130, 320), 50, 50);
         this.leftBtn = FrameUtil.createButton(this, "", new Point(gamePanel.getWidth() + 60, 320), 50, 50);
         this.rightBtn = FrameUtil.createButton(this, "", new Point(gamePanel.getWidth() + 200, 320), 50, 50);
+        this.undoBtn = FrameUtil.createButton(this, "", new Point(gamePanel.getWidth() + 130, 20), 50, 50);
         gamePanel.setStepLabel(stepLabel);
 
         this.upBtn.setIcon(up);
         this.downBtn.setIcon(down);
         this.leftBtn.setIcon(left);
         this.rightBtn.setIcon(right);
+        this.undoBtn.setIcon(undo);
         //给按钮渲染图片
         this.upBtn.setPreferredSize(new Dimension(up.getIconWidth(), up.getIconHeight()));
         this.downBtn.setPreferredSize(new Dimension(down.getIconWidth(), down.getIconHeight()));
         this.leftBtn.setPreferredSize(new Dimension(left.getIconWidth(), left.getIconHeight()));
         this.rightBtn.setPreferredSize(new Dimension(right.getIconWidth(), right.getIconHeight()));
+        this.undoBtn.setPreferredSize(new Dimension(right.getIconWidth(), right.getIconHeight()));
         //使得按钮与图片契合
 
         this.restartBtn.addActionListener(e -> {
@@ -87,10 +96,19 @@ public class GameFrame extends JFrame {
             gamePanel.doMoveRight();
             gamePanel.requestFocusInWindow();
         });
+        this.undoBtn.addActionListener(l -> {
+            gamePanel.afterUndo();
+            gamePanel.requestFocusInWindow();
+        });
         //todo: add other button here
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        this.addComponentListener(new ComponentAdapter() {
+            public void componentShown(ComponentEvent e) {
+                gamePanel.requestFocusInWindow();
+            }
+        });//此方法能在键盘失灵时强制使其再次获得焦点
     }
 
 

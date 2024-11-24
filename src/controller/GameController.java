@@ -16,7 +16,7 @@ public class GameController {
     private final MapMatrix model;
     private static int count = 0;//连续推箱计数器，用于在超级模式中判定失败与否
     private static int gameResult = 1;//0 代表失败，1 代表游戏尚未结束，2 代表游戏胜利
-    //超级模式（暂定）：玩家解锁连环推箱子功能，并且可以进行斜向推箱子与移动，地图上会有特殊方格
+    //超级模式（暂定）：玩家解锁连环推箱子功能，并且可以进行斜向推箱子与移动，地图上会有特殊方格，但超级模式不允许悔步
 
     public GameController(GamePanel view, MapMatrix model) {
         this.view = view;
@@ -50,6 +50,7 @@ public class GameController {
             return true;
         } else if ((map[tRow][tCol] == 10 || map[tRow][tCol] == 12) && normalCanBoxMove(tRow, tCol, direction)) {
             //update hero in MapMatrix
+            view.changeBoxMoveArray(direction);
             model.getMatrix()[row][col] -= 20;
             model.getMatrix()[tRow][tCol] += 20;
             normalBoxMove(tRow, tCol, direction);
@@ -67,7 +68,7 @@ public class GameController {
             }
             //检测玩家移动的第一个箱子是否位于目标点，如果是则进行胜利判定
             if ((map[finalBoxRow + direction.getRow()][finalBoxCol + direction.getCol()] == 1) && gameResult == 1) {
-                checkLose(finalBoxRow, finalBoxCol);
+                normalCheckLose(finalBoxRow, finalBoxCol);
             }
             //如果玩家连续推动的多个箱子中的最末尾的箱子被推到的位置与墙接触，并且游戏未结束，则进行失败判定
             //尽量不要有位于墙的死角的目标点，否则失败判定会异常
@@ -147,7 +148,7 @@ public class GameController {
         }
     }
 
-    public void checkLose(int finalBoxRow, int finalBoxCol) {
+    public void normalCheckLose(int finalBoxRow, int finalBoxCol) {
         int[][] map = model.getMatrix();
         int wall = 0;
         //代表与末尾箱接触的墙面数量

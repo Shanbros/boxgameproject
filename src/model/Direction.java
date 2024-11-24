@@ -1,7 +1,7 @@
 package model;
 
 public enum Direction {
-    LEFT(0, -1), UP(-1, 0), RIGHT(0, 1), DOWN(1, 0),
+    NULL(0,0),LEFT(0, -1), UP(-1, 0), RIGHT(0, 1), DOWN(1, 0),
     TopLEFT(-1, -1), TopRIGHT(-1, 1), BottomLEFT(1, -1), BottomRIGHT(1, 1);
     //添加斜向上与斜向下方向，后续可开发斜行模式
     private final int row;
